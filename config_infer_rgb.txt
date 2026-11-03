@@ -1,0 +1,49 @@
+[property]
+# ---------------------------------------------------------------------------
+# RGB BRANCH (Logitech C270) -- fed by streammux_rgb (batch-size=1), native
+# 1280x720 NV12 (hardware-decoded from MJPEG via nvv4l2decoder), no resize
+# before this stage. nvinfer itself performs any resize needed to match
+# rgb.engine's input dims.
+# ---------------------------------------------------------------------------
+filter-out-class-ids=3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22;23;24;25;26;27;28;29;30;31;32;33;34;35;36;37;38;39;40;41;42;43;44;45;46;47;48;49;50;51;52;53;54;55;56;57;58;59;60;61;62;63;64;65;66;67;68;69;70;71;72;73;74;75;76;77;78;79
+gpu-id=0
+net-scale-factor=0.0039215697906911373
+
+# model-color-format: 0=RGB, 1=BGR, 2=L. Standard 3-channel color model --
+# leave at 0 unless rgb.onnx was exported expecting BGR input ordering.
+model-color-format=0
+
+onnx-file=rgb.onnx
+model-engine-file=rgb_gpu_fp16.engine
+labelfile-path=labels.txt
+
+# Batch=1: this branch has exactly one source (the Logitech camera), matching
+# streammux_rgb's batch-size=1 in pipeline_app.py.
+batch-size=1
+
+network-mode=2
+workspace-size=1024
+num-detected-classes=80
+interval=0
+gie-unique-id=2
+process-mode=1
+network-type=0
+cluster-mode=2
+maintain-aspect-ratio=1
+symmetric-padding=1
+parse-bbox-func-name=NvDsInferParseYolo
+custom-lib-path=libnvdsinfer_custom_impl_Yolo.so
+engine-create-func-name=NvDsInferYoloCudaEngineGet
+
+# DLA off by default -- see note in config_infer_thermal.txt. If you do
+# enable DLA via --enable-dla, both branches share DLA core 0 by default in
+# pipeline_app.py; the NX has 2 DLA cores total, so consider routing this
+# branch to use-dla-core=1 in the pipeline script if you want the two
+# branches on separate DLA engines instead of contending for one.
+enable-dla=1
+use-dla-core=1
+
+[class-attrs-all]
+nms-iou-threshold=0.45
+pre-cluster-threshold=0.25
+topk=300

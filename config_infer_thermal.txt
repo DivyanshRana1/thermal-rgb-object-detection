@@ -1,0 +1,53 @@
+[property]
+# ---------------------------------------------------------------------------
+# THERMAL BRANCH (FLIR Boson 640) -- fed by streammux_thermal (batch-size=1),
+# native 640x512 NV12, no resize before this stage. nvinfer itself performs
+# any resize needed to match thermal.engine's input dims.
+# ---------------------------------------------------------------------------
+filter-out-class-ids=3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22;23;24;25;26;27;28;29;30;31;32;33;34;35;36;37;38;39;40;41;42;43;44;45;46;47;48;49;50;51;52;53;54;55;56;57;58;59;60;61;62;63;64;65;66;67;68;69;70;71;72;73;74;75;76;77;78;79
+gpu-id=0
+net-scale-factor=0.0039215697906911373
+
+# model-color-format: 0=RGB, 1=BGR, 2=L (single-channel grayscale).
+# Boson's NV12 output is radiometric, not true color -- if thermal.onnx was
+# trained/exported on single-channel thermal frames, set this to 2 and make
+# sure the ONNX export's input channel count matches. If the thermal model
+# was trained on 3-channel (grayscale replicated to RGB) images instead,
+# leave this at 0. Verify against how thermal.onnx was actually exported --
+# a mismatch here silently degrades detection accuracy without erroring out.
+model-color-format=0
+
+onnx-file=thermal.onnx
+model-engine-file=thermal_gpu_fp16.engine
+labelfile-path=labels.txt
+
+# Batch=1: this branch has exactly one source (the Boson camera), matching
+# streammux_thermal's batch-size=1 in pipeline_app.py. Do not raise this
+# unless you add a second thermal source into this same mux.
+batch-size=1
+
+network-mode=2
+workspace-size=1024
+num-detected-classes=80
+interval=0
+gie-unique-id=1
+process-mode=1
+network-type=0
+cluster-mode=2
+maintain-aspect-ratio=1
+symmetric-padding=1
+parse-bbox-func-name=NvDsInferParseYolo
+custom-lib-path=libnvdsinfer_custom_impl_Yolo.so
+engine-create-func-name=NvDsInferYoloCudaEngineGet
+
+# DLA off by default -- controlled centrally via --enable-dla in
+# pipeline_app.py, which sets enable-dla/use-dla-core as properties at
+# runtime and will override whatever is set here. Leave at 0 so a plain
+# `python3 pipeline_app.py` run (no --enable-dla flag) stays GPU-only.
+enable-dla=1
+use-dla-core=0
+
+[class-attrs-all]
+nms-iou-threshold=0.45
+pre-cluster-threshold=0.10
+topk=300

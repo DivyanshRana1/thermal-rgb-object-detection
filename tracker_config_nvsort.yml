@@ -1,0 +1,51 @@
+%YAML:1.0
+
+##################################################################
+# NvSORT config for DeepStream 6.3 nvtracker element
+# Optimized for Jetson Xavier NX + YOLOv8 FP16 pipeline
+##################################################################
+
+BaseConfig:
+  minDetectorConfidence: 0.25
+
+
+TargetManagement:
+  enableBboxUnClipping: 1
+
+  # Maximum objects tracked per stream
+  maxTargetsPerStream: 60
+
+  # New target creation threshold
+  minIouDiff4NewTarget: 0.5
+
+  # Minimum confidence for maintaining track
+  minTrackerConfidence: 0.2
+
+  # Frames required before confirming target
+  probationAge: 1
+
+  # Keep lost objects alive
+  maxShadowTrackingAge: 30
+
+  # Remove short-lived tracks
+  earlyTerminationAge: 1
+
+
+TrajectoryManagement:
+  # Enable persistent unique IDs
+  useUniqueID: 1
+
+
+DataAssociator:
+  # Greedy matching
+  dataAssociatorType: 0
+
+  # IOU based association (NvSORT)
+  associationMatcherType: 0
+
+  checkClassMatch: 1
+
+
+StateEstimator:
+  # Kalman filter
+  stateEstimatorType: 2
