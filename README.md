@@ -432,22 +432,4 @@ Before calling the project reusable, verify:
 -   V4L2 documentation:
     https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/
 
-## 17. Project status
 
-Replace this section before publishing:
-
--   **Supported camera types:** TODO
--   **Tested camera count:** TODO
--   **Tested camera models:** TODO
--   **NVIDIA platform:** TODO
--   **JetPack / DeepStream versions:** TODO
--   **Detector and model version:** TODO
--   **Outputs implemented:** TODO
--   **Known limitations:** TODO
-
-## License
-
-Add a license only after confirming that you have the right to license
-all included code and assets. If this repository contains institutional
-or third-party code, obtain the relevant permission and preserve
-required notices.
